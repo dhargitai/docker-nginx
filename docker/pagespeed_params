@@ -1,0 +1,22 @@
+pagespeed FileCachePath /var/cache/ngx_pagespeed;
+location ~ "\.pagespeed\.([a-z]\.)?[a-z]{2}\.[^.]{10}\.[^.]+" {
+    add_header "" "";
+}
+location ~ "^/pagespeed_static/" { }
+location ~ "^/ngx_pagespeed_beacon$" { }
+
+pagespeed EnableFilters collapse_whitespace;
+pagespeed EnableFilters combine_css;
+pagespeed EnableFilters combine_javascript;
+pagespeed EnableFilters extend_cache;
+pagespeed EnableFilters inline_javascript;
+pagespeed EnableFilters insert_dns_prefetch;
+pagespeed EnableFilters lazyload_images;
+pagespeed EnableFilters move_css_to_head;
+pagespeed EnableFilters prioritize_critical_css;
+pagespeed EnableFilters remove_comments;
+pagespeed EnableFilters rewrite_images;
+pagespeed EnableFilters rewrite_javascript;
+
+pagespeed JsInlineMaxBytes 3072;
+pagespeed RetainComment " google_ad_section*";

@@ -1,43 +1,45 @@
-server {
-    listen  80;
-
-    root /var/www;
-    index index.html index.htm index.php;
-
-    # Make site accessible from http://set-ip-address.xip.io
-    server_name localhost;
-
-    access_log /var/log/nginx/localhost.com-access.log;
-    error_log  /var/log/nginx/localhost.com-error.log error;
-
-    charset utf-8;
-
-    location / {
-        try_files $uri $uri/ /index.html /index.php?$query_string;
-    }
-
-    location = /favicon.ico { log_not_found off; access_log off; }
-    location = /robots.txt  { access_log off; log_not_found off; }
-
-    error_page 404 /index.php;
-
-    # pass the PHP scripts to php5-fpm
-    # Note: \.php$ is susceptible to file upload attacks
-    # Consider using: "location ~ ^/(index|app|app_dev|config)\.php(/|$) {"
-    location ~ ^/(index|app|app_dev|config)\.php(/|$) {
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        # With php5-fpm:
-        # fastcgi_pass unix:/var/run/php5-fpm.sock;
-        fastcgi_pass php_backend;
-        fastcgi_index index.php;
-        include fastcgi_params;
-        include fastcgi.conf;
-        fastcgi_param LARA_ENV local; # Environment variable for Laravel
-        fastcgi_param HTTPS off;
-    }
-
-    # Deny .htaccess file access
-    location ~ /\.ht {
-        deny all;
-    }
-}
+# upstream myservice_backend {
+#     server %myservice-ip%:9000;
+# }
+#
+# server {
+#     server_name www.myservice.hu;
+#     return 301 $scheme://myservice.hu$request_uri;
+# }
+#
+# server {
+#     listen 80;
+#     charset utf-8;
+#
+#     server_name myservice.hu;
+#     root        /var/www/myservice.hu/public;
+#     index       index.php;
+#
+#
+#     pagespeed on;
+#     include /etc/nginx/pagespeed_params;
+#
+#
+#     location / {
+#         proxy_pass http://myservice_backend;
+#         include /etc/nginx/proxy_params;
+#         include /etc/nginx/gzip_params;
+#     }
+#
+#     location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar|ttf|woff)$ {
+#         expires 30d;
+#         access_log off;
+#         log_not_found off;
+#     }
+#
+#     location ~ \.php$ {
+#         include /etc/nginx/fastcgi_params;
+#         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+#         fastcgi_pass  unix:/var/run/php5-fpm.sock;
+#         try_files $uri =404;
+#     }
+#
+#     location ~ /\.(ht|svn|git) {
+#         deny all;
+#     }
+# }
