@@ -2,6 +2,8 @@ proxy_buffering off;
 proxy_buffer_size 16k;
 proxy_busy_buffers_size 16k;
 
+proxy_cache backcache;
+
 proxy_http_version 1.1;
 proxy_set_header Host $host;
 proxy_set_header Connection "";
