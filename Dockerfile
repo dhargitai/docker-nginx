@@ -1,5 +1,8 @@
 FROM phusion/baseimage:0.9.18
 
+ENV NPS_VERSION 1.10.33.6
+ENV NGINX_VERSION 1.9.12
+
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key E5267A6C && \
     apt-get update && \
     apt-get install --assume-yes python-software-properties
@@ -7,22 +10,20 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key E5267A6C && \
 # Install packages
 RUN apt-get install --assume-yes --fix-missing \
         build-essential zlib1g-dev libpcre3 libpcre3-dev libssl-dev unzip \
-        nginx \
-        curl \
         wget \
-        vim
+        nginx
 
 RUN cd && \
-    wget https://github.com/pagespeed/ngx_pagespeed/archive/release-1.10.33.4-beta.zip && \
-    unzip release-1.10.33.4-beta.zip
-RUN cd && cd ngx_pagespeed-release-1.10.33.4-beta/ && \
-    wget https://dl.google.com/dl/page-speed/psol/1.10.33.4.tar.gz && \
-    tar -xzvf 1.10.33.4.tar.gz
+    wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.zip && \
+    unzip release-${NPS_VERSION}-beta.zip
+RUN cd && cd ngx_pagespeed-release-${NPS_VERSION}-beta/ && \
+    wget https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz && \
+    tar -xzvf ${NPS_VERSION}.tar.gz
 RUN cd && \
-    wget http://nginx.org/download/nginx-1.8.0.tar.gz && \
-    tar -xvzf nginx-1.8.0.tar.gz
-RUN cd && cd nginx-1.8.0/ && ./configure \
-      --add-module=$HOME/ngx_pagespeed-release-1.10.33.4-beta \
+    wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
+    tar -xvzf nginx-${NGINX_VERSION}.tar.gz
+RUN cd && cd nginx-${NGINX_VERSION}/ && ./configure \
+      --add-module=$HOME/ngx_pagespeed-release-${NPS_VERSION}-beta \
       --without-http_autoindex_module \
       --with-http_ssl_module \
       --with-http_gzip_static_module \
@@ -40,16 +41,16 @@ RUN cd && cd nginx-1.8.0/ && ./configure \
     make && make install && make clean
 
 RUN apt-get autoremove --assume-yes && \
-    apt-get remove --assume-yes build-essential zlib1g-dev libpcre3-dev libssl-dev unzip
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    apt-get remove --assume-yes build-essential zlib1g-dev libpcre3-dev libssl-dev unzip python-software-properties
+RUN apt-get clean all && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN cd && \
-    rm -rf nginx-1.8.0* ngx_pagespeed-release-1.10.33.4-beta release-1.10.33.4-beta.zip
+    rm -rf nginx-${NGINX_VERSION}* ngx_pagespeed-release-${NPS_VERSION}-beta release-${NPS_VERSION}-beta.zip
 RUN mkdir -p /var/cache/ngx_pagespeed/
 RUN chown -R root:www-data /var/cache/ngx_pagespeed
 RUN chmod -R ug+rw /var/cache/ngx_pagespeed
 
 RUN echo "Package: nginx \
-Pin: version 1.8.0-pagespeed \
+Pin: version ${NGINX_VERSION}-pagespeed \
 Pin-Priority: 1001" > /etc/apt/preferences.d/nginx
 
 # Add nginx
